@@ -72,7 +72,7 @@ int main(void)
 					trytime = 0;
 				}
 				
-				if(scan == 9){				
+				if(scan == 9 && trytime < 4){				
 					for(l = 0; l < 4; l++){
 						if(input[l] == NULL){
 							printS(80, trytime * 16, "NULL");
