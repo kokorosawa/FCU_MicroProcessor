@@ -7,12 +7,19 @@
 #include "SYS_init.h"
 #include "LCD.h"
 #include "Scankey.h"
+#include "gpio.h"
 
-
+volatile uint8_t ledState = 0;
 
 void TMR1_IRQHandler(void)
 {
-	Timer_ClearIntFlag(TIMER1);
+	ledState = ~ledState;
+	if (ledState)
+		PC12 = 0;
+	else
+		PC12 = 1;
+
+	TIMER_ClearIntFlag(TIMER1);
 }
 
 void Init_Timer(void)
@@ -23,11 +30,26 @@ void Init_Timer(void)
 	TIMER_Start(TIMER1);
 }
 
+void EINT1_IRQHandler(void)
+{
+	GPIO_CLR_INT_FLAG(PB, BIT15);
+}
+
+void Init_EXTINT(void)
+{
+	GPIO_SetMode(PB, BIT15, GPIO_MODE_INPUT);
+	GPIO_EnableEINT1(PB, 15, GPIO_INT_RISING);
+	NVIC_EnableIRQ(EINT0_IRQn);
+
+	GPIO_SET_DEBOUNCE_TIME(GPIO_DBCLKSRC_LIRC, GPIO_DBCLKSEL_64);
+	GPIO_ENABLE_DEBOUNCE(PC, BIT15);
+}
+
 int main(void)
 {
 	SYS_Init();
 	init_LCD();
 	clear_LCD();
-	OpenKeyPad();
 	Init_Timer();
+	Init_EXTINT();
 }
