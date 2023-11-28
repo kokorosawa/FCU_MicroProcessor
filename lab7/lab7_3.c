@@ -7,11 +7,13 @@
 #include <stdlib.h>
 #include "LCD.h"
 #include <string.h>
+
 char text[16] = "";
 char line1[16] = "";
 char line2[16] = "";
 char line3[16] = "";
 char line4[16] = "";
+
 int num[2] = {0, 0};
 int index = 0;
 int last;
@@ -91,24 +93,26 @@ void TMR0_IRQHandler(void)
 void GPAB_IRQHandler(void)
 {
   feeddog();
-  if(sleepState == 1)
+  if (sleepState == 1)
   {
     if (trytime == 0)
     {
-      print_Line(0,line1);
+      print_Line(0, line1);
     }
-  else if (trytime == 1)
-  {
-    print_Line(1,line2);
-  }
-  else if (trytime == 1)
-  {
-    print_Line(2,line3);
-  }
-  else if (trytime == 1)
-  {
-    print_Line(3,line4);
-  }
+    else if (trytime == 1)
+    {
+      print_Line(1, line2);
+    }
+    else if (trytime == 1)
+    {
+      print_Line(2, line3);
+    }
+    else if (trytime == 1)
+    {
+      print_Line(3, line4);
+    }
+
+    sleepState = ~sleepState;
   }
 
   NVIC_DisableIRQ(GPAB_IRQn);
@@ -203,52 +207,6 @@ void WDT_IRQHandler(void)
 {
   clear_LCD();
   sleepState = ~sleepState;
-  if (trytime == 0)
-  {
-    sprintf(line1, "%d", num[0]);
-  }
-  else if (trytime == 1)
-  {
-    if (operation == 1)
-    {
-      strcpy(line2, "+");
-    }
-    else if (operation == 2)
-    {
-      strcpy(line2, "-");
-    }
-    else if (operation == 3)
-    {
-      strcpy(line2, "/");
-    }
-    else if (operation == 4)
-    {
-      strcpy(line2, "*");
-    }
-  }
-  else if (trytime == 2)
-  {
-    sprintf(line3, "%d", num[1]);
-  }
-  else if (trytime == 3)
-  {
-    if (operation == 1)
-    {
-      sprintf(line3, "%d", num[0] + num[1]);
-    }
-    else if (operation == 2)
-    {
-      sprintf(line3, "%d", num[0] - num[1]);
-    }
-    else if (operation == 3)
-    {
-      sprintf(line3, "%d", num[0] / num[1]);
-    }
-    else if (operation == 4)
-    {
-      sprintf(line3, "%d", num[0] * num[1]);
-    }
-  }
   WDT_CLEAR_TIMEOUT_INT_FLAG(); // Clear WDT interrupt flag
 }
 
@@ -319,12 +277,28 @@ int main(void)
       num[index] *= 10;
       num[index] += 1;
       sprintf(text, "%d", num[index]);
+      if (index == 0)
+      {
+        sprintf(line1, "%d", num[index]);
+      }
+      else
+      {
+        sprintf(line2, "%d", num[index]);
+      }
       print_Line(trytime, text);
       KEY_Flag = 0;
       break;
     case 2:
       num[index] *= 10;
       num[index] += 2;
+      if (index == 0)
+      {
+        sprintf(line1, "%d", num[index]);
+      }
+      else
+      {
+        sprintf(line2, "%d", num[index]);
+      }
       sprintf(text, "%d", num[index]);
       print_Line(trytime, text);
       KEY_Flag = 0;
@@ -332,6 +306,14 @@ int main(void)
     case 4:
       num[index] *= 10;
       num[index] += 3;
+      if (index == 0)
+      {
+        sprintf(line1, "%d", num[index]);
+      }
+      else
+      {
+        sprintf(line2, "%d", num[index]);
+      }
       sprintf(text, "%d", num[index]);
       print_Line(trytime, text);
       KEY_Flag = 0;
@@ -339,45 +321,44 @@ int main(void)
     case 5:
       num[index] *= 10;
       num[index] += 4;
+      if (index == 0)
+      {
+        sprintf(line1, "%d", num[index]);
+      }
+      else
+      {
+        sprintf(line2, "%d", num[index]);
+      }
       sprintf(text, "%d", num[index]);
       print_Line(trytime, text);
       KEY_Flag = 0;
       break;
     case 3:
-      if (trytime == 0)
-      {
-        strcpy(line1, text);
-      }
       trytime++;
       index++;
       operation = 1;
       sprintf(text, "+");
+      sprintf(line3, "+");
       print_Line(trytime, text);
       KEY_Flag = 0;
       trytime++;
       break;
     case 6:
-      if (trytime == 0)
-      {
-        strcpy(line1, text);
-      }
       trytime++;
       index++;
       operation = 2;
       sprintf(text, "-");
+      sprintf(line3, "-");
       print_Line(trytime, text);
       KEY_Flag = 0;
       trytime++;
       break;
     case 8:
-      if (trytime == 0)
-      {
-        strcpy(line1, text);
-      }
       trytime++;
       index++;
       operation = 3;
       sprintf(text, "/");
+      sprintf(line3, "/");
       print_Line(trytime, text);
       trytime++;
       KEY_Flag = 0;
@@ -387,6 +368,7 @@ int main(void)
       index++;
       operation = 4;
       sprintf(text, "*");
+      sprintf(line3, "*");
       print_Line(trytime, text);
       trytime++;
       KEY_Flag = 0;
