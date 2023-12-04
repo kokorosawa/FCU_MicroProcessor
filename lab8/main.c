@@ -12,50 +12,101 @@
 #include "adc.h"
 #include "pwm.h"
 #include "LCD.h"
+#include "Note_Freq.h"
+#define P125ms 125000
+#define P250ms 250000
+#define P500ms 500000
+#define P1S 1000000
+
 uint32_t u32Flag;
 uint32_t u32ADCvalue;
+char text[16] = "";
+volatile uint8_t u8ADF;
 
 void ADC_IRQHandler(void)
 {
 
-  // Get ADC conversion finish interrupt flag
-  u32Flag = ADC_GET_INT_FLAG(ADC, ADC_ADF_INT);
-
-  if (u32Flag & ADC_ADF_INT)
-  {
-    u32ADCvalue = ADC_GET_CONVERSION_DATA(ADC, 7);
-    sprintf(text, "ADC7 = %d", u32ADCvalue);
-    clear_LCD();
-    print_Line(1, text);
-    if (u32ADCvalue > 500 &&)
-      if (u32ADCvalue > 4000)
-        PWM_ConfigOutputChannel(PWM1, PWM_CH0, u32ADCvalue, 90);
-  }
-  ADC_CLR_INT_FLAG(ADC, u32Flag);
+	// Get ADC conversion finish interrupt flag
+	u32Flag = ADC_GET_INT_FLAG(ADC, ADC_ADF_INT);
+	ADC_EnableInt(ADC, ADC_ADF_INT);
+	if (u32Flag & ADC_ADF_INT)
+	{
+		u8ADF = 1;
+		u32ADCvalue = ADC_GET_CONVERSION_DATA(ADC, 7);
+	}
+	ADC_CLR_INT_FLAG(ADC, u32Flag);
 }
 
 void Init_ADC(void)
 {
-  ADC_Open(ADC, ADC_INPUT_MODE, ADC_OPERATION_MODE, ADC_CHANNEL_MASK);
-  ADC_POWER_ON(ADC);
-  ADC_EnableInt(ADC, ADC_ADF_INT);
-  NVIC_EnableIRQ(ADC_IRQn);
-  ADC_START_CONV(ADC);
+	ADC_Open(ADC, ADC_INPUT_MODE, ADC_OPERATION_MODE, ADC_CHANNEL_MASK);
+	ADC_POWER_ON(ADC);
+	ADC_EnableInt(ADC, ADC_ADF_INT);
+	NVIC_EnableIRQ(ADC_IRQn);
+	ADC_START_CONV(ADC);
 }
 
 void Init_PWM(void)
 { // PWMA_Ch0 = 50Hz, 50% duty cycle
-  PWM_ConfigOutputChannel(PWM1, PWM_CH0, 50, 50);
-  PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
-  PWM_Start(PWM1, PWM_CH_0_MASK);
+	PWM_ConfigOutputChannel(PWM1, PWM_CH0, 50, 50);
+	PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
+	PWM_Start(PWM1, PWM_CH_0_MASK);
 }
 
 int32_t main(void)
 {
-  SYS_Init();
-  Init_ADC();
-  Init_PWM();
 
-  while (1)
-    ;
+	uint8_t i = 0;
+
+	uint16_t music[72] = {
+		E6, D6u, E6, D6u, E6, B5, D6, C6, A5, A5, 0, 0,
+		C5, E5, A5, B5, B5, 0, C5, A5, B5, C6, C6, 0,
+		E6, D6u, E6, D6u, E6, B5, D6, C6, A5, A5, 0, 0,
+		C5, E5, A5, B5, B5, 0, E5, C6, B5, A5, A5, 0,
+		B5, C6, D6, E6, E6, 0, G5, F6, E6, D6, D6, 0,
+		F5, E6, D6, C6, C6, 0, E5, D6, C6, B5, B5, 0};
+
+	uint32_t pitch[72] = {
+		P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms,
+		P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms,
+		P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms, P250ms,
+		P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms,
+		P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms,
+		P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms, P500ms};
+	SYS_Init();
+	Init_ADC();
+	Init_PWM();
+	init_LCD();
+	// for (i = 0; i < 72; i++)
+	// {
+	//   PWM_ConfigOutputChannel(PWM1, PWM_CH0, music[i], 90); // 0=Buzzer ON
+	//   if (music[i] != 0)
+	//     PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
+	//   else
+	//     PWM_DisableOutput(PWM1, PWM_CH_0_MASK);
+	//   CLK_SysTickDelay(pitch[i]);
+	// }
+	while (1)
+	{
+		ADC_START_CONV(ADC);
+		sprintf(text, "ADC7 = %4d", u32ADCvalue );
+		print_Line(1, text);
+		PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
+		if (u32ADCvalue < 500)
+			PWM_DisableOutput(PWM1, PWM_CH_0_MASK);
+		else if (u32ADCvalue > 500 && u32ADCvalue < 4000)
+			PWM_ConfigOutputChannel(PWM1, PWM_CH0, u32ADCvalue, 90);
+		else
+		{
+				i++;
+				PWM_ConfigOutputChannel(PWM1, PWM_CH0, music[i], 90); // 0=Buzzer ON
+				if (music[i] != 0)
+					PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
+				else
+					PWM_DisableOutput(PWM1, PWM_CH_0_MASK);
+				CLK_SysTickDelay(pitch[i]);
+				if(i == 71) i = 0;
+			
+		}
+	}
 }
