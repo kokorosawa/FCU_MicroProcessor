@@ -53,23 +53,66 @@ void Init_PWM(void)
 	PWM_Start(PWM1, PWM_CH_0_MASK);
 }
 
+void Buzz(int number)
+{
+	int i;
+	for (i = 0; i < number; i++)
+	{
+		PB11 = 0;				// PB11 = 0 to turn on Buzzer
+		CLK_SysTickDelay(1000); // Delay
+		PB11 = 1;				// PB11 = 1 to turn off Buzzer
+		CLK_SysTickDelay(1000); // Delay
+	}
+}
+
 int32_t main(void)
 {
 
 	uint8_t i = 0;
-    int player = 0;
-    double convert = 0;
+	int player1 = 0;
+	double convert = 0;
+	int8_t x = 0, y = 0;
+	int8_t keyin = 0;
+	int8_t movX = 3, dirX = 0;
+	int8_t movY = 3, dirY = 0;
+	int player1_score = 0;
+	int player2_score = 0;
+	unsigned char bmp16x16[32] = {
+		0x00, 0x00, 0x40, 0xE0, 0xE0, 0xE0, 0xE0, 0x70, 0x7C, 0xFE, 0xF8, 0x80, 0x80, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x7F, 0x3E, 0x1E, 0x07, 0x07, 0x07, 0x03, 0x03, 0x02, 0x00};
 	SYS_Init();
 	Init_ADC();
 	Init_PWM();
 	init_LCD();
+	dirX = 1;
+	dirY = 1;
 	while (1)
 	{
 		ADC_START_CONV(ADC);
-		sprintf(text, "ADC7 = %4d", u32ADCvalue );
+		sprintf(text, "ADC7 = %4d", u32ADCvalue);
 		print_Line(1, text);
 		PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
-        convert = u32ADCvalue / 4096.0;
-        player = convert * LCD_Xmax;
+		convert = u32ADCvalue / 4096.0;
+		player1 = convert * LCD_Xmax;
+		draw_Bmp16x16(x, y, FG_COLOR, BG_COLOR, bmp16x16);
+		x = x + dirX * movX; // increment/decrement X
+		y = y + dirY * movY; // increment/decrement Y
+
+		if (x < 16)
+		{
+			dirX = 1; // check X boundary Min
+			Buzz(10);
+		}
+
+		if (x > LCD_Xmax - 16)
+		{
+			Buzz(10);
+			dirX = -1; // check X boundary Max
+		}
+
+		if (y < 16 && x <= player1 && x + 16 > player1)
+			dirY = 1; // check Y boundary Min
+		if (y > LCD_Ymax - 16 && x <= player1 && x + 16 > player1)
+			dirY = -1; // check Y boundary Max
 	}
 }

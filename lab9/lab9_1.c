@@ -219,19 +219,22 @@ int A = 0;
 int B = 0;
 int i = 0;
 int j = 0;
-void checker(){
-	A=0;
-	B=0;
-	for(i = 0; i< 4; i++){			
-		if(a[i] == guess[i])
-				A++;
-		else{
-					for(j = 0; j < 4 ;j++){
-				if(a[i] == guess[j])
+void checker()
+{
+	A = 0;
+	B = 0;
+	for (i = 0; i < 4; i++)
+	{
+		if (a[i] == guess[i])
+			A++;
+		else
+		{
+			for (j = 0; j < 4; j++)
+			{
+				if (a[i] == guess[j])
 					B++;
+			}
 		}
-		}
-
 	}
 }
 
@@ -253,8 +256,8 @@ void UART02_IRQHandler(void)
 				{
 					guessindex = 0;
 					checker();
-					//printf("g:%d %d %d %d\n", guess[0], guess[1], guess[2], guess[3]);
-					//printf("a:%d %d %d %d\n", a[0], a[1], a[2], a[3]);
+					// printf("g:%d %d %d %d\n", guess[0], guess[1], guess[2], guess[3]);
+					// printf("a:%d %d %d %d\n", a[0], a[1], a[2], a[3]);
 					sprintf(text, "%d%d%d%d  %dA%dB", guess[0], guess[1], guess[2], guess[3], A, B);
 					print_Line(trytime, text);
 					trytime++;
@@ -317,7 +320,7 @@ int main(void)
 			ansindex++;
 			ASSCII = KEY_Flag + 48;
 			UART_Write(UART0, &ASSCII, 1);
-//printf("%d %d %d %d\n", ans[0], ans[1], ans[2], ans[3]);
+			// printf("%d %d %d %d\n", ans[0], ans[1], ans[2], ans[3]);
 			KEY_Flag = 0;
 			break;
 

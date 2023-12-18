@@ -1,0 +1,73 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: £gVision V5.24.2.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: battt battt, battt, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.24.1
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 5 (build 528)
+Assembler:       Armasm.exe V5.06 update 5 (build 528)
+Linker/Locator:  ArmLink.exe V5.06 update 5 (build 528)
+Library Manager: ArmAr.exe V5.06 update 5 (build 528)
+Hex Converter:   FromElf.exe V5.06 update 5 (build 528)
+CPU DLL:         SARMCM3.DLL V5.24.1
+Dialog DLL:      DARMCM1.DLL V1.18.0.0
+    Target DLL: Nu_Link.dll
+Dialog DLL:      TARMCM1.DLL V1.13.0.0
+ 
+<h2>Project:</h2>
+C:\Users\D1049174\Desktop\GitHub\FCU_MicroProcessor\exam3\exam3\SampleCode\Nu-LB-NUC140\UART_LCD_7seg_keypad\KEIL\Nu-LB-NUC140_TMR.uvproj
+Project File Date:  12/18/2023
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'TMR'
+creating preprocessor file for system_NUC100Series.c...
+creating preprocessor file for sys.c...
+creating preprocessor file for clk.c...
+creating preprocessor file for uart.c...
+creating preprocessor file for timer.c...
+creating preprocessor file for gpio.c...
+creating preprocessor file for spi.c...
+creating preprocessor file for main.c...
+creating preprocessor file for SYS_init.c...
+creating preprocessor file for Seven_Segment_wang.c...
+compiling main.c...
+..\MCU_init.h(44): warning:  #1-D: last line of file ends without a newline
+  #define ADC_OPERATION_MODE ADC_OPERATION_MODE_CONTINUOUS // SINGLE, SINGLE_CYCLE, CONTINUOUS
+..\main.c(118): warning:  #1-D: last line of file ends without a newline
+  }
+..\main.c(71): warning:  #177-D: variable "i"  was declared but never referenced
+  	uint8_t i = 0;
+..\main.c(75): warning:  #177-D: variable "keyin"  was declared but never referenced
+  	int8_t keyin = 0;
+..\main.c(78): warning:  #177-D: variable "player1_score"  was declared but never referenced
+  	int player1_score = 0;
+..\main.c(79): warning:  #177-D: variable "player2_score"  was declared but never referenced
+  	int player2_score = 0;
+..\main.c: 6 warnings, 0 errors
+creating preprocessor file for LCD.c...
+compiling SYS_init.c...
+..\MCU_init.h(44): warning:  #1-D: last line of file ends without a newline
+  #define ADC_OPERATION_MODE ADC_OPERATION_MODE_CONTINUOUS // SINGLE, SINGLE_CYCLE, CONTINUOUS
+..\..\..\..\Library\Nu-LB-NUC140\Source\SYS_init.c: 1 warning, 0 errors
+linking...
+.\obj\TMR_LED.axf: Error: L6218E: Undefined symbol ADC_EnableInt (referred from main.o).
+.\obj\TMR_LED.axf: Error: L6218E: Undefined symbol ADC_Open (referred from main.o).
+.\obj\TMR_LED.axf: Error: L6218E: Undefined symbol PWM_ConfigOutputChannel (referred from main.o).
+.\obj\TMR_LED.axf: Error: L6218E: Undefined symbol PWM_EnableOutput (referred from main.o).
+.\obj\TMR_LED.axf: Error: L6218E: Undefined symbol PWM_Start (referred from main.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 5 error messages.
+".\obj\TMR_LED.axf" - 5 Error(s), 7 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:00
+</pre>
+</body>
+</html>
