@@ -20783,6 +20783,20 @@ extern void draw_LCD(unsigned char *buffer);
 #line 143 "..\\..\\..\\..\\Library\\Nu-LB-NUC140\\Include\\Note_Freq.h"
 
 #line 16 "..\\main.c"
+#line 1 "..\\..\\..\\..\\Library\\Nu-LB-NUC140\\Include\\Draw2D.h"
+
+
+     
+extern void draw_Line(int x1, int y1, int x2, int y2, uint16_t fg_color, uint16_t bg_color);
+
+extern void draw_Circle(int xc, int yc, int r, uint16_t fg_color, uint16_t bg_color);
+
+extern void draw_Rectangle(int x0, int y0, int x1, int y1, uint16_t fg_color, uint16_t bg_color);
+extern void fill_Rectangle(int x0, int y0, int x1, int y1, uint16_t fg_color, uint16_t bg_color);
+
+extern void draw_Triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint16_t fg_color, uint16_t bg_color);
+
+#line 17 "..\\main.c"
 
 
 
@@ -20839,7 +20853,7 @@ int32_t main(void)
 {
 
 	uint8_t i = 0;
-	int player1 = 0;
+	int player1x = 0;
 	double convert = 0;
 	int8_t x = 0, y = 0;
 	int8_t keyin = 0;
@@ -20856,33 +20870,35 @@ int32_t main(void)
 	init_LCD();
 	dirX = 1;
 	dirY = 1;
+		(*((volatile uint32_t *)(((((( uint32_t)0x50000000) + 0x4000) + 0x0200)+(0x40*(1))) + ((11)<<2)))) = 1;
 	while (1)
 	{
+		clear_LCD();
 		((((ADC_T *) ((( uint32_t)0x40000000) + 0xE0000)))->ADCR |= (1ul << 11));
-		sprintf(text, "ADC7 = %4d", u32ADCvalue);
-		print_Line(1, text);
 		PWM_EnableOutput(((PWM_T *) ((( uint32_t)0x40100000) + 0x40000)), (1UL));
+		PWM_DisableOutput(((PWM_T *) ((( uint32_t)0x40100000) + 0x40000)), (1UL));
 		convert = u32ADCvalue / 4096.0;
-		player1 = convert * 128;
-		draw_Bmp16x16(x, y, 0xFFFF, 0x0000, bmp16x16);
+		player1x = convert * 128;
+		draw_Circle(x,y ,1,0xFFFF,0x0000);
+		draw_Bmp16x16(player1x, 56, 0xFFFF, 0x0000, bmp16x16);
 		x = x + dirX * movX; 
 		y = y + dirY * movY; 
 
 		if (x < 16)
 		{
 			dirX = 1; 
-			Buzz(10);
+			
 		}
 
 		if (x > 128 - 16)
 		{
-			Buzz(10);
+			
 			dirX = -1; 
 		}
 
-		if (y < 16 && x <= player1 && x + 16 > player1)
+		if (y < 16 && x <= player1x && x + 16 > player1x)
 			dirY = 1; 
-		if (y > 64 - 16 && x <= player1 && x + 16 > player1)
+		if (y > 64 - 16 && x <= player1x && x + 16 > player1x)
 			dirY = -1; 
 	}
 }

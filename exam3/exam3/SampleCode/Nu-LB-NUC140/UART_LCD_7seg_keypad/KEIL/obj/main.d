@@ -30,3 +30,4 @@
 .\obj\main.o: ..\..\..\..\Library\Nu-LB-NUC140\Include\SYS_init.h
 .\obj\main.o: ..\..\..\..\Library\Nu-LB-NUC140\Include\LCD.h
 .\obj\main.o: ..\..\..\..\Library\Nu-LB-NUC140\Include\Note_Freq.h
+.\obj\main.o: ..\..\..\..\Library\Nu-LB-NUC140\Include\Draw2D.h

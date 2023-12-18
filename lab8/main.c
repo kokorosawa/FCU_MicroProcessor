@@ -22,6 +22,8 @@ uint32_t u32Flag;
 uint32_t u32ADCvalue;
 char text[16] = "";
 volatile uint8_t u8ADF;
+volatile uint8_t buffer[10];
+
 
 void ADC_IRQHandler(void)
 {
@@ -51,6 +53,25 @@ void Init_PWM(void)
 	PWM_ConfigOutputChannel(PWM1, PWM_CH0, 50, 50);
 	PWM_EnableOutput(PWM1, PWM_CH_0_MASK);
 	PWM_Start(PWM1, PWM_CH_0_MASK);
+}
+
+void UART02_IRQHandler(void)
+{
+	uint8_t c;
+	uint32_t u32IntSts = UART0->ISR;
+
+	if (u32IntSts & UART_IS_RX_READY(UART0)) // check ISR on & RX is ready
+	{
+		while (!(UART0->FSR & UART_FSR_RX_EMPTY_Msk))
+		{ // check RX is not empty
+
+			c = UART_READ(UART0); // read UART RX data
+			if (c != '0')
+			{
+				
+			}
+		}
+	}
 }
 
 int32_t main(void)
